@@ -37,7 +37,7 @@ public class SkipManager {
     }
 
 
-    public void add(ProxyIpBean ipBean) {
+    public synchronized void add(ProxyIpBean ipBean) {
         if (list.isEmpty()) {
             list.add(ipBean);
             WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port);
@@ -46,7 +46,7 @@ public class SkipManager {
         }
     }
 
-    public void doneOnce() {
+    public synchronized void doneOnce() {
         list.removeFirst();
         if (!list.isEmpty()) {
             ProxyIpBean ipBean = list.getFirst();
