@@ -40,7 +40,7 @@ public class SkipManager {
     public synchronized void add(ProxyIpBean ipBean) {
         if (list.isEmpty()) {
             list.add(ipBean);
-            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port);
+            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port,ipBean.userAgent);
         } else {
             list.add(ipBean);
         }
@@ -50,7 +50,7 @@ public class SkipManager {
         list.removeFirst();
         if (!list.isEmpty()) {
             ProxyIpBean ipBean = list.getFirst();
-            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port);
+            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port,ipBean.userAgent);
         }
     }
 
