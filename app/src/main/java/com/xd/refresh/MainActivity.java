@@ -5,9 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
-import com.xd.refresh.manager.Constance;
-import com.xd.refresh.manager.thread.AdTask;
-import com.xd.refresh.manager.thread.ThreadPoolManager;
+import com.xd.refresh.bean.ProxyIpBean;
+import com.xd.refresh.manager.SkipManager;
 import com.xd.refresh.util.Tools;
 
 public class MainActivity extends AppCompatActivity {
@@ -23,18 +22,48 @@ public class MainActivity extends AppCompatActivity {
         testBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AdTask adTask1 = new AdTask(Constance.TTGY_AD_UNIT_IDS, Constance.KDXF_APP_ID, Constance.KDXF_APP_NAME, Constance.KDXF_APP_PACKAGE_NAME, 1);
-//                AdTask adTask2 = new AdTask(Constance.TTGY_AD_UNIT_IDS, Constance.KDXF_APP_ID, Constance.KDXF_APP_NAME, Constance.KDXF_APP_PACKAGE_NAME, 2);
-//                AdTask adTask3 = new AdTask(Constance.TTGY_AD_UNIT_IDS, Constance.KDXF_APP_ID, Constance.KDXF_APP_NAME, Constance.KDXF_APP_PACKAGE_NAME, 3);
-//		AdTask adTask4 = new AdTask(Constance.TTGY_AD_UNIT_IDS, Constance.KDXF_APP_ID, Constance.KDXF_APP_NAME, Constance.KDXF_APP_PACKAGE_NAME, 4);
-//		AdTask adTask5 = new AdTask(Constance.TTGY_AD_UNIT_IDS, Constance.KDXF_APP_ID, Constance.KDXF_APP_NAME, Constance.KDXF_APP_PACKAGE_NAME, 5);
+//                AdTask adTask1 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 1);
+//                AdTask adTask2 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 2);
+//                AdTask adTask3 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 3);
+//		AdTask adTask4 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 4);
+//		AdTask adTask5 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 5);
 
-                ThreadPoolManager.getInstance().addTask(adTask1);
+//                ThreadPoolManager.getInstance().addTask(adTask1);
 //                ThreadPoolManager.getInstance().addTask(adTask2);
 //                ThreadPoolManager.getInstance().addTask(adTask3);
 //		ThreadPoolManager.getInstance().addTask(adTask4);
 //		ThreadPoolManager.getInstance().addTask(adTask5);
 
+
+                ProxyIpBean ipBean = new ProxyIpBean();
+                ipBean.skipUrl = "http://www.baidu.com";
+
+                ProxyIpBean ipBean2 = new ProxyIpBean();
+                ipBean2.skipUrl = "http://www.voiceads.cn/";
+
+//                ProxyIpBean ipBean3 = new ProxyIpBean();
+//                ipBean3.skipUrl = "http://member.djjlll.com/shop.html#/line/share";
+
+                ProxyIpBean ipBean4 = new ProxyIpBean();
+                ipBean4.skipUrl = "http://json.cn/";
+
+                ProxyIpBean ipBean5 = new ProxyIpBean();
+                ipBean5.skipUrl = "http://blog.csdn.net/jack__frost/article/details/52965905";
+
+                ProxyIpBean ipBean6 = new ProxyIpBean();
+                ipBean6.skipUrl = "http://www.jianshu.com/p/0fcf6a1a13fe";
+
+                ProxyIpBean ipBean7 = new ProxyIpBean();
+                ipBean7.skipUrl = "https://lanhuapp.com/web/#!/item/board?pid=ce012b23-5369-40bf-9ccb-c82d52510135&type=share_board";
+
+
+                SkipManager.getInstance().add(ipBean);
+                SkipManager.getInstance().add(ipBean2);
+//                SkipManager.getInstance().add(ipBean3);
+                SkipManager.getInstance().add(ipBean4);
+                SkipManager.getInstance().add(ipBean5);
+                SkipManager.getInstance().add(ipBean6);
+                SkipManager.getInstance().add(ipBean7);
             }
         });
     }

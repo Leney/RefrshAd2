@@ -13,6 +13,7 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
+import com.xd.refresh.bean.ProxyIpBean;
 import com.xd.refresh.manager.Constance;
 import com.xd.refresh.manager.SkipManager;
 import com.xd.refresh.util.Tools;
@@ -46,7 +47,6 @@ public class WebViewActivity extends AppCompatActivity {
         host = getIntent().getStringExtra("host");
         port = getIntent().getIntExtra("port", -1);
 
-
         if (port < 0) {
             finish();
             return;
@@ -67,16 +67,16 @@ public class WebViewActivity extends AppCompatActivity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
-                Log.i("llj","界面开始加载！！！");
+                Log.i("llj", "界面开始加载！！！");
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                Log.i("llj","界面加载完成！！！");
+                Log.i("llj", "界面加载完成！！！");
                 moniTouch();
 
-                finish();
+//                finish();
             }
         });
 
@@ -123,14 +123,16 @@ public class WebViewActivity extends AppCompatActivity {
             // 返回上一页面
             webView.goBack();
         } else {
-            super.onBackPressed();
+            // 按返回退出界面无效
+//            super.onBackPressed();
         }
     }
 
     @Override
     public void finish() {
         super.finish();
-        SkipManager.getInstance().doneOnce();
+//        SkipManager.getInstance().doneOnce();
+        // 关闭代理
         Tools.revertBackProxy(webView, AppApplication.class.getName());
     }
 
@@ -154,14 +156,14 @@ public class WebViewActivity extends AppCompatActivity {
      */
     private void moniTouch() {
         float downX = Tools.randomMinMax(0, Constance.SCREEN_WIDTH);
-        downX += (float)Tools.randomMinMax(0,999)/1000;
+        downX += (float) Tools.randomMinMax(0, 999) / 1000;
 
-        Log.i("llj","downX----->>>"+downX);
+        Log.i("llj", "downX----->>>" + downX);
 
-        float downY = Tools.randomMinMax(0,Constance.SCREEN_HEIGHT);
-        downY += (float)Tools.randomMinMax(0,999)/1000;
+        float downY = Tools.randomMinMax(0, Constance.SCREEN_HEIGHT);
+        downY += (float) Tools.randomMinMax(0, 999) / 1000;
 
-        Log.i("llj","downY----->>>"+downY);
+        Log.i("llj", "downY----->>>" + downY);
 
 
 //        float upX = downX - (float)Tools.randomMinMax(0,286)/1000;
@@ -181,6 +183,29 @@ public class WebViewActivity extends AppCompatActivity {
         webView.onTouchEvent(upEvent);
         downEvent.recycle();
         upEvent.recycle();
+
+
+        // 检查进入下一个跳转信息
+        loadNext();
+//        Tools.revertBackProxy(webView, AppApplication.class.getName());
+//        SkipManager.getInstance().doneOnce();
+    }
+
+
+    /**
+     * 加载下一条网页
+     */
+    public void loadNext() {
+        ProxyIpBean ipBean = SkipManager.getInstance().getNextIpBean();
+        if (ipBean == null) {
+            return;
+        }
+        loadUrl = ipBean.skipUrl;
+        host = ipBean.ip;
+        port = ipBean.port;
+
+        Tools.setWebViewProxy(webView, host, port, AppApplication.class.getName());
+        webView.loadUrl(loadUrl);
     }
 
 

@@ -1,11 +1,13 @@
 package com.xd.refresh.bean;
 
+import java.io.Serializable;
+
 /**
  * 获取到的代理ip对象实例
  * @author dell
  *
  */
-public class ProxyIpBean {
+public class ProxyIpBean implements Serializable {
     public String ip;
     /** 端口号*/
     public int port;

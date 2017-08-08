@@ -300,7 +300,6 @@ public class NetUtil {
     // result = new String(result.getBytes(), "utf-8");
     //
     // } catch (Exception e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // result = "";
     // } finally {
@@ -316,7 +315,6 @@ public class NetUtil {
     // // try {
     // reader.close();
     // // } catch (Exception e) {
-    // // // TODO Auto-generated catch block
     // // e.printStackTrace();
     // // }
     // }
@@ -379,7 +377,6 @@ public class NetUtil {
     // // try {
     // // reader.close();
     // // } catch (Exception e) {
-    // // // TODO Auto-generated catch block
     // // e.printStackTrace();
     // // }
     // // }
@@ -442,7 +439,6 @@ public class NetUtil {
     // result = new String(result.getBytes(), "utf-8");
     //
     // } catch (Exception e) {
-    // // TODO Auto-generated catch block
     // e.printStackTrace();
     // result = "";
     // } finally {
@@ -458,7 +454,6 @@ public class NetUtil {
     // // try {
     // reader.close();
     // // } catch (Exception e) {
-    // // // TODO Auto-generated catch block
     // // e.printStackTrace();
     // // }
     // }
@@ -752,7 +747,6 @@ public class NetUtil {
             }
 
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             result = "请求讯飞广告出现异常！";
             listener.onLoadFailed(result);

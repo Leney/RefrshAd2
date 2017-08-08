@@ -54,5 +54,18 @@ public class SkipManager {
         }
     }
 
+    /**
+     * 获取下一次需要加载的网页路径、代理等信息
+     *
+     * @return
+     */
+    public synchronized ProxyIpBean getNextIpBean() {
+        list.removeFirst();
+        if (!list.isEmpty()) {
+            return list.getFirst();
+        }
+        return null;
+    }
+
 
 }

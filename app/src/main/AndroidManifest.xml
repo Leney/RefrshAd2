@@ -24,7 +24,9 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".WebViewActivity"/>
+        <activity
+            android:name=".WebViewActivity"
+            android:launchMode="singleTask"/>
     </application>
 
 </manifest>
