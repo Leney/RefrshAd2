@@ -84,6 +84,7 @@ public class Tools {
                 // 在点击概率下，再控制百分之而二十的概率
                 // 需要二跳的概率
                 ipBean.skipUrl = adInfo.getLandingUrl();
+                ipBean.userAgent = deviceInfo.ua;
                 SkipManager.getInstance().add(ipBean);
             }
 

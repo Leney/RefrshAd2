@@ -20,4 +20,6 @@ public class ProxyIpBean implements Serializable {
     public String isp;
     /** 此代理需要跳转的url*/
     public String skipUrl;
+    /** 跳转的浏览器需要使用的userAgent*/
+    public String userAgent;
 }

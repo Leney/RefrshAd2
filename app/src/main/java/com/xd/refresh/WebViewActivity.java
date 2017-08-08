@@ -32,6 +32,8 @@ public class WebViewActivity extends AppCompatActivity {
 
     private int port;
 
+    private String userAgent;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,6 +48,7 @@ public class WebViewActivity extends AppCompatActivity {
         loadUrl = getIntent().getStringExtra("loadUrl");
         host = getIntent().getStringExtra("host");
         port = getIntent().getIntExtra("port", -1);
+        userAgent = getIntent().getStringExtra("userAgent");
 
         if (port < 0) {
             finish();
@@ -98,6 +101,8 @@ public class WebViewActivity extends AppCompatActivity {
 
 
         WebSettings settings = webView.getSettings();
+        // 设置webview的userAgent
+        settings.setUserAgentString(userAgent);
         // 启用支持javascript
         settings.setJavaScriptEnabled(true);
         // // 优先使用缓存
@@ -137,7 +142,7 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
 
-    public static void startActivity(String url, String host, int port) {
+    public static void startActivity(String url, String host, int port,String userAgent) {
         Context context = AppApplication.getInstance().getApplicationContext();
         Intent intent = new Intent(context, WebViewActivity.class);
         if ("".equals(url.trim())) {
@@ -146,6 +151,7 @@ public class WebViewActivity extends AppCompatActivity {
         intent.putExtra("loadUrl", url);
         intent.putExtra("host", host);
         intent.putExtra("port", port);
+        intent.putExtra("userAgent",userAgent);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
