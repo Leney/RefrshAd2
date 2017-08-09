@@ -142,7 +142,6 @@ public class AdTask implements Runnable {
                 }
             }
 
-
             // ipBean为空  就重新来，进入下一次循环
             if (this.ipBean == null) {
                 System.out.println("新集合中的数据是空的！！");

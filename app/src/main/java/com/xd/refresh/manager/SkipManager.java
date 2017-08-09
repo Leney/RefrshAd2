@@ -40,32 +40,40 @@ public class SkipManager {
     public synchronized void add(ProxyIpBean ipBean) {
         if (list.isEmpty()) {
             list.add(ipBean);
-            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port,ipBean.userAgent);
+            WebViewActivity.startActivity(ipBean);
+//            if(AppApplication.isTopActivity("WebViewActivity")){
+//                Log.i("llj","当前顶部Activity是WebViewActivity!!");
+////                WebViewActivity.beginLoadUrl();
+//                WebViewActivity.startActivity(ipBean);
+//            }else {
+//                WebViewActivity.startActivity(ipBean);
+//            }
         } else {
             list.add(ipBean);
         }
     }
 
-    public synchronized void doneOnce() {
-        list.removeFirst();
-        if (!list.isEmpty()) {
-            ProxyIpBean ipBean = list.getFirst();
-            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port,ipBean.userAgent);
-        }
-    }
+//    public synchronized void doneOnce() {
+//        list.removeFirst();
+//        if (!list.isEmpty()) {
+//            ProxyIpBean ipBean = list.getFirst();
+//            WebViewActivity.startActivity(ipBean.skipUrl, ipBean.ip, ipBean.port,ipBean.userAgent);
+//        }
+//    }
 
     /**
      * 获取下一次需要加载的网页路径、代理等信息
      *
+     * @param isRemoveFirst 是否移除第一条信息
      * @return
      */
-    public synchronized ProxyIpBean getNextIpBean() {
-        list.removeFirst();
+    public synchronized ProxyIpBean getNextIpBean(boolean isRemoveFirst) {
+        if (isRemoveFirst) {
+            list.removeFirst();
+        }
         if (!list.isEmpty()) {
             return list.getFirst();
         }
         return null;
     }
-
-
 }

@@ -40,11 +40,11 @@ public class Tools {
 //				"num=5&type=2&pro=&yys=0&port=1&time=1");
 //		List<ProxyIpBean> ipBeans = ParseUtil.parseIpBeans(result);
 
-        // 讯代理
-        String result = NetUtil.sendGet("http://www.xdaili.cn/ipagent/privateProxy/applyStaticProxy",
-                "count=1&spiderId=4fb3cc493e0340e98804629db8f4f0bd&returnType=2");
-        List<ProxyIpBean> ipBeans = ParseUtil.parseIpBeansFromXun(result);
-        System.out.println("获取到代理ip的条数---->>"+ipBeans.size());
+        // ip精灵
+        String result = NetUtil.sendGet("http://open.ipjldl.com/index.php/api/entry"
+                ,"method=proxyServer.ipinfolist&quantity=20&province=&city=&anonymous=1&ms=1&service=0&protocol=1&wdsy=on&format=json&separator=1&separator_txt=");
+        List<ProxyIpBean> ipBeans = ParseUtil.parseIpBeansFromIpJL(result);
+        System.out.println("获取到代理ip的条数---->>" + ipBeans.size());
         return ipBeans;
 
     }
@@ -52,12 +52,13 @@ public class Tools {
 
     /**
      * 控制概率
+     *
      * @param proValue
      * @return
      */
     public static boolean isClick(int proValue) {
         int common = new Random().nextInt(100);
-        if(common<=proValue) {
+        if (common <= proValue) {
             return true;
         }
         return false;
@@ -70,17 +71,17 @@ public class Tools {
      * @param ipBean
      */
     public static void doClick(final AdInfo adInfo, final ProxyIpBean ipBean, DeviceInfo deviceInfo, String threadName) {
-        System.out.println("广告类型-->>"+adInfo.getAdType() + "--线程编号----->>"+threadName);
+        System.out.println("广告类型-->>" + adInfo.getAdType() + "--线程编号----->>" + threadName);
         int length = adInfo.getClickUrls().length;
         for (int i = 0; i < length; i++) {
-            String url = Tools.replaceAdClickUrl(adInfo.getClickUrls()[i], deviceInfo.adw,deviceInfo.adh);
-            NetUtil.requestUrlByProxy(ipBean, url,deviceInfo.ua);
+            String url = Tools.replaceAdClickUrl(adInfo.getClickUrls()[i], deviceInfo.adw, deviceInfo.adh);
+            NetUtil.requestUrlByProxy(ipBean, url, deviceInfo.ua);
         }
 //        // 测试
 //        adInfo.setAdType(AdInfo.AD_TYPE_REDIRECT);
-        if(TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_REDIRECT)) {
+        if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_REDIRECT)) {
             System.out.println("是跳转类型的广告！！！");
-            if(isClick(20)){
+            if (isClick(20)) {
                 // 在点击概率下，再控制百分之而二十的概率
                 // 需要二跳的概率
                 ipBean.skipUrl = adInfo.getLandingUrl();
@@ -98,19 +99,19 @@ public class Tools {
 //                }
 //            });
 
-        }else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_DOWNLOAD)) {
+        } else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_DOWNLOAD)) {
             // TODO 下载类型的广告
             System.out.println("是下载类型的广告！！！");
             // 上报讯飞开始下载的链接
             int length2 = adInfo.getInstDownloadStartUrls().length;
             System.out.println("上报开始下载！！");
             for (int i = 0; i < length2; i++) {
-                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadStartUrls()[i],deviceInfo.ua);
+                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadStartUrls()[i], deviceInfo.ua);
             }
 
             try {
                 // 休眠一两秒
-                Thread.sleep(Tools.randomMinMax(1000,2000));
+                Thread.sleep(Tools.randomMinMax(1000, 2000));
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -126,14 +127,14 @@ public class Tools {
             // 上报讯飞开始下载完成的链接
             int length3 = adInfo.getInstDownloadSuccUrls().length;
             for (int i = 0; i < length3; i++) {
-                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadSuccUrls()[i],deviceInfo.ua);
+                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadSuccUrls()[i], deviceInfo.ua);
             }
 
             System.out.println("上报开始安装！！");
             // 上报讯飞开始安装的链接
             int length4 = adInfo.getInstInstallStartUrls().length;
             for (int i = 0; i < length4; i++) {
-                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstInstallStartUrls()[i],deviceInfo.ua);
+                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstInstallStartUrls()[i], deviceInfo.ua);
             }
 
             // 休眠2秒
@@ -147,9 +148,9 @@ public class Tools {
             // 上报讯飞安装成功的链接
             int length5 = adInfo.getInstInstallSuccUrls().length;
             for (int i = 0; i < length5; i++) {
-                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstInstallSuccUrls()[i],deviceInfo.ua);
+                NetUtil.requestUrlByProxy(ipBean, adInfo.getInstInstallSuccUrls()[i], deviceInfo.ua);
             }
-        }else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_BRAND)) {
+        } else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_BRAND)) {
             // TODO 品牌类型的广告
             System.out.println("是品牌类型的广告！！！");
         }
@@ -162,7 +163,7 @@ public class Tools {
      * @param url
      * @return
      */
-    public static String replaceAdClickUrl(String url,int adWidth,int adHeight) {
+    public static String replaceAdClickUrl(String url, int adWidth, int adHeight) {
 //        int width = showAdWidthAndHeight[0];
 //        int height = showAdWidthAndHeight[1];
         float downX = adWidth * 0.456f;
@@ -220,9 +221,10 @@ public class Tools {
 
     /**
      * 随机从数据库中获取数据
+     *
      * @return
      */
-    public static DeviceInfo getDeviceInfoByRamdon(){
+    public static DeviceInfo getDeviceInfoByRamdon() {
         int id = randomMinMax(1, Constance.DB_TOTAL_DATA_COUNT);
         return DeviceDBManager.getInstance().queryDeviceInfo(id);
 //        DeviceInfo deviceInfo = DeviceDBManager.getInstance().queryDeviceInfo(id);
@@ -251,7 +253,6 @@ public class Tools {
     }
 
 
-
     /**
      * 设置WebView的代理
      * 注意这里applicationClassName 传递的是 application 的类名
@@ -278,6 +279,7 @@ public class Tools {
 
     /**
      * 关闭代理
+     *
      * @param webview
      * @param applicationClassName
      * @return
@@ -697,16 +699,17 @@ public class Tools {
 
     /**
      * 获取屏幕的宽度和高度
+     *
      * @param context
      */
-    public static void getScreenWidhtAndHeight(Context context){
+    public static void getScreenWidhtAndHeight(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
 
         Constance.SCREEN_WIDTH = wm.getDefaultDisplay().getWidth();
         Constance.SCREEN_HEIGHT = wm.getDefaultDisplay().getHeight();
 
-        Log.i("llj","屏幕宽度----->>>"+Constance.SCREEN_WIDTH);
-        Log.i("llj","屏幕高度----->>>"+Constance.SCREEN_HEIGHT);
+        Log.i("llj", "屏幕宽度----->>>" + Constance.SCREEN_WIDTH);
+        Log.i("llj", "屏幕高度----->>>" + Constance.SCREEN_HEIGHT);
     }
 
 }

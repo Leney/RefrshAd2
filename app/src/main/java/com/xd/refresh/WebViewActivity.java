@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.webkit.WebSettings;
@@ -18,108 +21,164 @@ import com.xd.refresh.manager.Constance;
 import com.xd.refresh.manager.SkipManager;
 import com.xd.refresh.util.Tools;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * 网页类 webview(普通的网页类)
  *
  * @author lilijun
  */
 public class WebViewActivity extends AppCompatActivity {
-    private WebView webView;
+    private  WebView webView;
 
-    private String loadUrl = "";
+//    private String loadUrl = "";
 
-    private String host;
+//    private String host;
+//
+//    private int port;
 
-    private int port;
+//    private String userAgent;
 
-    private String userAgent;
+    private ProxyIpBean proxyIp;
+
+
+    private long timeout = 10000;
+
+    private Timer timer;
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            if (msg.what == 1) {
+                //这里对已经显示出页面且加载超时的情况不做处理
+                if (webView != null && webView.getProgress() < 100) {
+                    // 超时了
+                    Log.e("llj", "加载超时了--url---->>" + webView.getUrl());
+                    loadNext();
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         initView();
+        initData();
     }
 
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        Log.i("llj","onNewIntent run here!!!");
+        initData();
+    }
+
+    private void initData(){
+        proxyIp = (ProxyIpBean) getIntent().getSerializableExtra("proxyIp");
+        if(proxyIp == null){
+            return;
+        }
+        if(TextUtils.isEmpty(proxyIp.skipUrl)){
+            return;
+        }
+        // 设置WebView 代理
+        Tools.setWebViewProxy(webView, proxyIp.ip, proxyIp.port, AppApplication.class.getName());
+        // 设置webview的userAgent
+        webView.getSettings().setUserAgentString(proxyIp.userAgent);
+
+        webView.loadUrl(proxyIp.skipUrl);
+    }
+
+
+
     protected void initView() {
+//        FrameLayout frameLayout = new FrameLayout(WebViewActivity.this);
+//        webView = new WebView(this);
+//        Button testBtn = new Button(WebViewActivity.this);
+//        testBtn.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                ProxyIpBean ipBean = new ProxyIpBean();
+//                ipBean.skipUrl = "http://www.baidu.com";
+//
+//                ProxyIpBean ipBean2 = new ProxyIpBean();
+//                ipBean2.skipUrl = "http://www.voiceads.cn/";
+//
+//                ProxyIpBean ipBean3 = new ProxyIpBean();
+//                ipBean3.skipUrl = "http://member.djjlll.com/shop.html#/line/share";
+//
+//                ProxyIpBean ipBean4 = new ProxyIpBean();
+//                ipBean4.skipUrl = "http://json.cn/";
+//
+//                ProxyIpBean ipBean5 = new ProxyIpBean();
+//                ipBean5.skipUrl = "http://blog.csdn.net/jack__frost/article/details/52965905";
+//
+//                ProxyIpBean ipBean6 = new ProxyIpBean();
+//                ipBean6.skipUrl = "http://www.jianshu.com/p/0fcf6a1a13fe";
+//
+//                ProxyIpBean ipBean7 = new ProxyIpBean();
+//                ipBean7.skipUrl = "http://www.cnblogs.com/wjtaigwh/p/6043829.html";
+//
+//
+//                SkipManager.getInstance().add(ipBean);
+//                SkipManager.getInstance().add(ipBean2);
+//                SkipManager.getInstance().add(ipBean3);
+//                SkipManager.getInstance().add(ipBean4);
+//                SkipManager.getInstance().add(ipBean5);
+//                SkipManager.getInstance().add(ipBean6);
+//                SkipManager.getInstance().add(ipBean7);
+//            }
+//        });
+//        testBtn.setText("加载新的数据");
+//        frameLayout.addView(webView);
+//        frameLayout.addView(testBtn,new FrameLayout.LayoutParams(200,100));
+
         webView = new WebView(this);
         setContentView(webView);
 
 
-        loadUrl = getIntent().getStringExtra("loadUrl");
-        host = getIntent().getStringExtra("host");
-        port = getIntent().getIntExtra("port", -1);
-        userAgent = getIntent().getStringExtra("userAgent");
 
-        if (port < 0) {
-            finish();
-            return;
-        }
-        Tools.setWebViewProxy(webView, host, port, AppApplication.class.getName());
-
-        // loadUrl = "http://www.baidu.com";
-        webView.loadUrl(loadUrl);
 
         webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, String url) {
-//                // 返回值是true的时候就在本webView打开，为false调用系统浏览器或第三方浏览器
-//                view.loadUrl(url);
-//                return true;
-//            }
-
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 super.onPageStarted(view, url, favicon);
                 Log.i("llj", "界面开始加载！！！");
+                timer = new Timer();
+                TimerTask tt = new TimerTask() {
+                    @Override
+                    public void run() {
+                        //超时后,首先判断页面加载进度,超时并且进度小于100,就执行超时后的动作
+                        Message msg = new Message();
+                        msg.what = 1;
+                        mHandler.sendMessage(msg);
+                        timer.cancel();
+                        timer.purge();
+                    }
+                };
+                timer.schedule(tt, timeout);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
-                Log.i("llj", "界面加载完成！！！");
-                moniTouch();
+                if (view.getProgress() >= 100) {
+                    Log.i("llj", "界面加载完成！！！progress----->>>" + view.getProgress());
+                    timer.cancel();
+                    timer.purge();
 
-//                finish();
+                    moniTouch();
+                }
             }
         });
 
-//        webView.setWebChromeClient(new WebChromeClient() {
-//            @Override
-//            public void onProgressChanged(WebView view, int newProgress) {
-//                if (newProgress == 100) {
-//                    // 网页加载完成
-//                    Log.i("llj", "网页加载完成！！！-->>>"+newProgress);
-//                    moniTouch();
-//                    finish();
-//                } else {
-//                    // 加载中
-//                    Log.i("llj", "网页加载中 ---->> " + newProgress);
-//                }
-//            }
-//
-//        });
-
-
-        WebSettings settings = webView.getSettings();
-        // 设置webview的userAgent
-        settings.setUserAgentString(userAgent);
         // 启用支持javascript
-        settings.setJavaScriptEnabled(true);
-        // // 优先使用缓存
-        // settings.setCacheMode(WebSettings.LOAD_CACHE_ELSE_NETWORK);
+        webView.getSettings().setJavaScriptEnabled(true);
         // 不使用缓存
-        settings.setCacheMode(WebSettings.LOAD_NO_CACHE);
-
-//        settings.setUseWideViewPort(true);// 设置此属性，可任意比例缩放
-        settings.setLoadWithOverviewMode(true);
-
-        // //设置字符编码
-        // settings.setDefaultTextEncodingName("GBK");
-        // 是否支持网页缩放
-        // settings.setBuiltInZoomControls(true);
-        // settings.setSupportZoom(true);
-
-//		webView.addJavascriptInterface(new DemoJavaScriptInterface(), "android");
+        webView.getSettings().setCacheMode(WebSettings.LOAD_NO_CACHE);
+        webView.getSettings().setLoadWithOverviewMode(true);
     }
 
     @Override
@@ -142,16 +201,10 @@ public class WebViewActivity extends AppCompatActivity {
     }
 
 
-    public static void startActivity(String url, String host, int port,String userAgent) {
+    public static void startActivity(ProxyIpBean ipBean) {
         Context context = AppApplication.getInstance().getApplicationContext();
         Intent intent = new Intent(context, WebViewActivity.class);
-        if ("".equals(url.trim())) {
-            return;
-        }
-        intent.putExtra("loadUrl", url);
-        intent.putExtra("host", host);
-        intent.putExtra("port", port);
-        intent.putExtra("userAgent",userAgent);
+        intent.putExtra("proxyIp",ipBean);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
@@ -171,14 +224,6 @@ public class WebViewActivity extends AppCompatActivity {
 
         Log.i("llj", "downY----->>>" + downY);
 
-
-//        float upX = downX - (float)Tools.randomMinMax(0,286)/1000;
-//        float upY = downY + (float)Tools.randomMinMax(0,213)/1000;
-//
-//        Log.i("llj","upX----->>>"+upX);
-//        Log.i("llj","upY ----->>>"+upY);
-
-
         final long downTime = SystemClock.uptimeMillis();
         final MotionEvent downEvent = MotionEvent.obtain(
                 downTime, downTime, MotionEvent.ACTION_DOWN, downX, downY, 0);
@@ -189,7 +234,6 @@ public class WebViewActivity extends AppCompatActivity {
         webView.onTouchEvent(upEvent);
         downEvent.recycle();
         upEvent.recycle();
-
 
         // 检查进入下一个跳转信息
         loadNext();
@@ -202,17 +246,21 @@ public class WebViewActivity extends AppCompatActivity {
      * 加载下一条网页
      */
     public void loadNext() {
-        ProxyIpBean ipBean = SkipManager.getInstance().getNextIpBean();
+        ProxyIpBean ipBean = SkipManager.getInstance().getNextIpBean(true);
         if (ipBean == null) {
+            Log.i("llj", "获取到下一次的加载信息为  null");
             return;
         }
-        loadUrl = ipBean.skipUrl;
-        host = ipBean.ip;
-        port = ipBean.port;
 
-        Tools.setWebViewProxy(webView, host, port, AppApplication.class.getName());
-        webView.loadUrl(loadUrl);
+        proxyIp = ipBean;
+
+        webView.clearCache(true);
+        // 设置webview代理
+        Tools.setWebViewProxy(webView, proxyIp.ip, proxyIp.port, AppApplication.class.getName());
+        // 设置webview的userAgent
+        webView.getSettings().setUserAgentString(proxyIp.userAgent);
+        Log.i("llj", "加载下一个网页链接!!!! url------->>" + proxyIp.skipUrl);
+        webView.loadUrl(proxyIp.skipUrl);
     }
-
 
 }

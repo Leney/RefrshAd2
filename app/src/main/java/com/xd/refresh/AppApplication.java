@@ -24,4 +24,24 @@ public class AppApplication extends Application {
         // 获取数据库数据的总条数
         Constance.DB_TOTAL_DATA_COUNT = (int) DeviceDBManager.getInstance().getTotalCount();
     }
+
+
+//    /**
+//     * 判断当前前端显示的是否是某个activity
+//     * @param className
+//     * @return
+//     */
+//    public static boolean isTopActivity(String className)
+//    {
+//        boolean isTop = false;
+//        ActivityManager am = (ActivityManager)instance.getSystemService(ACTIVITY_SERVICE);
+//        ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+//        Log.d("llj", "isTopActivity = " + cn.getClassName());
+//        if (cn.getClassName().contains(className))
+//        {
+//            isTop = true;
+//        }
+//        Log.d("llj", "isTop = " + isTop);
+//        return isTop;
+//    }
 }
