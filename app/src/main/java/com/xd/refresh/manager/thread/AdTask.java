@@ -280,7 +280,7 @@ public class AdTask implements Runnable {
         if (adInfo == null) {
             return;
         }
-        System.out.println("开始展示上报");
+        System.out.println("开始展示上报,广告类型------>>"+adInfo.getAdType());
         // 上报展示数据成功 请求上报链接
         NetUtil.requestUrlsByProxy(ipBean, adInfo.getImprUrls(), deviceInfo.ua);
         // 设置百分之6的点击率

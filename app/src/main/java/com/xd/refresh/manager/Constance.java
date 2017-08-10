@@ -7,11 +7,13 @@ package com.xd.refresh.manager;
 public class Constance {
 
 
-    /**
-     * 爱鲜蜂讯飞广告位id数组
-     */
-    public static final String[] AXF_AD_UNIT_IDS = {"72ADDD0A7D6DB73002B50127EFB9058E",
-            "4DC8E82FA7FD669A3F62C6838D9FFF6D", "09840B44546AA78634331F0B5AADDDAC"};
+    //    /**
+//     * 爱鲜蜂讯飞广告位id数组
+//     */
+//    public static final String[] AXF_AD_UNIT_IDS = {"72ADDD0A7D6DB73002B50127EFB9058E",
+//            "4DC8E82FA7FD669A3F62C6838D9FFF6D", "09840B44546AA78634331F0B5AADDDAC"};
+    public static final String[] AXF_AD_UNIT_IDS = {"BB0EAA5FB04B2091015ADD9FD61B7BF6",
+            "09B193CB93C134E83BF0B39410ED71F6", "8C261BADFB8BF9FA9B1424E42EBAE09E"};
 
 //    /**
 //     * 天天果园展示广告位控件分别对应的宽和高 [0]=全屏，[1]=banner,[2]=插屏,[3]=信息流
