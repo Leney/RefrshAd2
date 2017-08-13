@@ -1,13 +1,23 @@
 package com.xd.refresh.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
+import com.squareup.okhttp.CacheControl;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.MediaType;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.RequestBody;
+import com.squareup.okhttp.Response;
+import com.xd.refresh.AppApplication;
 import com.xd.refresh.bean.DeviceInfo;
 import com.xd.refresh.bean.ProxyIpBean;
 import com.xd.refresh.util.listener.OnLoadAdListener;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -23,6 +33,8 @@ import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.zip.GZIPInputStream;
+
+import static android.content.ContentValues.TAG;
 
 public class NetUtil {
     /**
@@ -602,6 +614,7 @@ public class NetUtil {
         BufferedReader reader = null;
         try {
             JSONObject requestBodyJson = new JSONObject();
+
             // 广告位id
             requestBodyJson.put("adunitid", adUnitId);
             // 数据类型json　或 html
@@ -651,6 +664,8 @@ public class NetUtil {
             requestBodyJson.put("appname", appName);
             // app包名 和讯飞后台保持一致
             requestBodyJson.put("pkgname", packageName);
+            // 讯飞新增字段?
+            requestBodyJson.put("appver","1.2.9");
 
 //            // 调试数据
 //            JSONObject debugObject = new JSONObject();
@@ -674,6 +689,8 @@ public class NetUtil {
             InetSocketAddress addr = new InetSocketAddress(ipBean.ip,ipBean.port);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
             urlConnection = (HttpURLConnection) url.openConnection(proxy);
+
+            urlConnection = (HttpURLConnection) url.openConnection();
 
 
 
@@ -703,8 +720,21 @@ public class NetUtil {
             urlConnection.setReadTimeout(10000);
             urlConnection.setRequestMethod("POST");
 
-            // 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
-            urlConnection.connect();
+
+//            Map<String,List<String>> headers = urlConnection.getRequestProperties();
+//            Log.i("llj","headers.size------->>"+headers.size());
+//
+//            for (Map.Entry<String, List<String>> entry : headers.entrySet() ) {
+//                for (int i = 0; i < entry.getValue().size(); i++) {
+//                    Log.i("llj","key---->>>"+entry.getKey()+"    value("+i+")----->>>"+entry.getValue().get(i));
+//                }
+//                Log.i("llj","     ");
+//                Log.i("llj","     ");
+//            }
+
+
+//            // 连接,也可以不用明文connect，使用下面的httpConn.getOutputStream()会自动connect
+//            urlConnection.connect();
             // 建立输入流，向指向的URL传入参数
             DataOutputStream dos = new DataOutputStream(urlConnection.getOutputStream());
             dos.writeBytes(requestBodyJson.toString());
@@ -715,11 +745,21 @@ public class NetUtil {
             int resultCode = urlConnection.getResponseCode();
             if (HttpURLConnection.HTTP_OK == resultCode) {
                 // 讯飞有数据返回
-                StringBuffer sb = new StringBuffer();
-                String readLine;
-                GZIPInputStream gis = new GZIPInputStream(urlConnection.getInputStream());
 
-                reader = new BufferedReader(new InputStreamReader(gis, "utf-8"));
+                InputStream responseStream = null;
+                StringBuffer sb = new StringBuffer();
+                String encoding = urlConnection.getHeaderField("Content-Encoding");
+                boolean gzipped = encoding!=null && encoding.toLowerCase().contains("gzip");
+                if(gzipped){
+                    responseStream = new BufferedInputStream(new GZIPInputStream(urlConnection.getInputStream()));
+                }else {
+                    responseStream = new BufferedInputStream(urlConnection.getInputStream());
+                }
+
+                String readLine;
+//                GZIPInputStream gis = new GZIPInputStream(responseStream);
+
+                reader = new BufferedReader(new InputStreamReader(responseStream, "utf-8"));
                 while ((readLine = reader.readLine()) != null) {
                     sb.append(readLine).append("\n");
                 }
@@ -751,7 +791,9 @@ public class NetUtil {
             result = "请求讯飞广告出现异常！";
             listener.onLoadFailed(result);
         } finally {
-            urlConnection.disconnect();
+            if(urlConnection != null){
+                urlConnection.disconnect();
+            }
             try {
                 if (reader != null) {
                     reader.close();
@@ -843,6 +885,177 @@ public class NetUtil {
         }
         bos.close();
         return bos.toByteArray();
+    }
+
+
+
+
+
+
+    /**
+     * 科大讯飞广告api请求方法
+     *
+     * @param listener
+     * @return
+     */
+    public static boolean doRequestByAds(final DeviceInfo deviceInfo, final ProxyIpBean ipBean,
+                                         String adUnitId, boolean isBoot, String appId, String appName, String packageName,
+                                         final OnLoadAdListener listener) {
+
+
+        JSONObject requestBodyJson = new JSONObject();
+        try {
+
+//            JSONObject requestBodyJson = new JSONObject();
+
+            // 广告位id
+            requestBodyJson.put("adunitid", adUnitId);
+            // 数据类型json　或 html
+            requestBodyJson.put("tramaterialtype", deviceInfo.tramaterialtype);
+            // // 是否支持deepLink 0=不支持，1=支持
+            requestBodyJson.put("is_support_deeplink",deviceInfo.is_support_deeplink);
+            // 广告位宽度
+            requestBodyJson.put("adw", deviceInfo.adw);
+            // 广告位高度
+            requestBodyJson.put("adh", deviceInfo.adh);
+            // 设备类型 -1=未知，0=phone,1=pad,2=pc,3=tv, 4=wap
+            requestBodyJson.put("devicetype", deviceInfo.devicetype);
+            // 操作系统类型
+            requestBodyJson.put("os", deviceInfo.os);
+            // 操作系统版本号
+            requestBodyJson.put("osv", deviceInfo.osv);
+            requestBodyJson.put("adid", deviceInfo.adid);
+            requestBodyJson.put("imei", deviceInfo.imei);
+            requestBodyJson.put("mac", deviceInfo.mac);
+            requestBodyJson.put("density", deviceInfo.density);
+            requestBodyJson.put("operator", deviceInfo.operator);
+            // userAgent
+            Log.i("llj", "转义之前 userAgent----->>" + deviceInfo.ua);
+            String escapeUserAgent = StringEscapeUtils.escapeJava(deviceInfo.ua);
+            Log.i("llj", "转义之之后 escapeUserAgent----->>" + escapeUserAgent);
+            requestBodyJson.put("ua", escapeUserAgent);
+            requestBodyJson.put("ts", System.currentTimeMillis());
+            // 设备屏幕宽度
+            requestBodyJson.put("dvw", deviceInfo.dvw);
+            // 设备屏幕高度
+            requestBodyJson.put("dvh", deviceInfo.dvh);
+            // 横竖屏 0=竖屏，1=横屏
+            requestBodyJson.put("orientation", deviceInfo.orientation);
+            // 设备生产商
+            requestBodyJson.put("vendor", deviceInfo.vendor);
+            // 设备型号
+            requestBodyJson.put("model", deviceInfo.model);
+            requestBodyJson.put("net", deviceInfo.net);
+            requestBodyJson.put("ip", ipBean.ip);
+            // 使用语言
+            requestBodyJson.put("lan", deviceInfo.lan);
+
+            // 是否开屏 1=开屏，0=非开屏
+            requestBodyJson.put("isboot", isBoot ? 1 : 0);
+            // 请求批量下发广告的数量，目前只能为”1”
+            requestBodyJson.put("batch_cnt", "1");
+            // appId 和讯飞后台保持一致
+            requestBodyJson.put("appid", appId);
+            // app名称 和讯飞后台保持一致
+            requestBodyJson.put("appname", appName);
+            // app包名 和讯飞后台保持一致
+            requestBodyJson.put("pkgname", packageName);
+            // 讯飞新增字段?
+            requestBodyJson.put("appver","1.2.9");
+
+//            // 调试数据
+//            JSONObject debugObject = new JSONObject();
+//            // 0，不限制 1，跳转类； 2，下载类;不指定的话，按值为 0 处理。
+//            debugObject.put("action_typ", 1);
+//            // 0，不限制；1 ，包含 landing_url 和deep_link ； 2 ， 仅 包 含landing_url ； 3 ， 仅
+//            // 包 含deep_link。不指定的话，按值为 0 处理
+//            debugObject.put("landing_type", 2);
+//            requestBodyJson.put("debug", debugObject);
+
+//            URL url = new URL("http://ws.voiceads.cn/ad/request");
+
+//            // 设置访问代理 TODO
+//            InetSocketAddress addr = new InetSocketAddress(ipBean.ip,ipBean.port);
+//            Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
+//            urlConnection = (HttpURLConnection) url.openConnection(proxy);
+
+//            JSONObject debugObject = new JSONObject();
+//            //用于指定下发广告的交互类型，取值范围： 0，不限制；1，跳转类； 2，下载类。不指定的话，按值为 0 处理
+//            debugObject.put("action_type", 0);
+//            // 用于指定下发广告的落地页类型，
+//            // 0=不限制,1=包含landing_url和deep_link,2=仅包含landing_url,3=仅包含deep_link,默认0
+//            debugObject.put("landing_type", 3);
+//            requestBodyJson.put("debug", debugObject);
+
+            Log.i("llj", "请求参数--->>>" + requestBodyJson.toString());
+
+        } catch (Exception e) {
+            Log.e(TAG, "请求广告数据出现异常#Exception\n", e);
+        }
+
+        RequestBody body = RequestBody.create(
+                MediaType.parse("text/x-markdown; charset=utf-8"),
+                requestBodyJson.toString().getBytes());
+
+
+        Request request = null;
+        CacheControl.Builder builder = new CacheControl.Builder();
+        builder.noCache();
+//        if(isBoot){
+            request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
+                    ("X-protocol-ver", "2.0").addHeader("Content-Type","application/json").build();
+//        }else {
+//            request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
+//                    ("X-protocol-ver", "2.0").addHeader("Content-Type","application/json").build();
+//        }
+//        Request request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
+//                ("X-protocol-ver", "2.0").addHeader("Content-Type","application/json").addHeader("Accept-Encoding","gzip").build();
+
+
+        AppApplication.getInstance().getHttpClient().newCall(request)
+                .enqueue(new Callback() {
+                    @Override
+                    public void onResponse(final Response response)
+                            throws IOException {
+                        // 获取请求时发送到服务器的reqKey(这个值是缓存前端数据的唯一标识值)
+                        // String reqKey =
+                        // response.request().header(reqHeaderKey);
+                        Log.i("llj", "返回响应码-------->>" + response.code());
+                        String result = response.body().string();
+                        Log.i("llj", "返回结果------>>>" + result);
+                        if (response.code() == 200) {
+                            // 服务端数据有变化
+                            try {
+                                JSONObject resultObject = new JSONObject(result);
+                                if (resultObject.getInt("rc") == 70200) {
+                                    // 请求广告成功、下发广告成功
+                                    listener.onLoadSuccess(resultObject,ipBean,deviceInfo);
+                                } else {
+                                    // 连接到服务器成功，但出现一些错误，下发广告失败
+                                    listener.onLoadFailed(result);
+                                }
+                            } catch (Exception e) {
+                                Log.e(TAG, "返回成功之后，解析数据出现异常#exception:\n", e);
+                            }
+                        } else {
+                            Log.e(TAG,
+                                    "服务器报错，无法响应，返回码---->>>" + response.code());
+                            // 前端自己构造一个RspPacket对象 返回给子类
+                            String[] requestTag = (String[]) response.request()
+                                    .tag();
+                            // 这里rspPacket返回的actions 是请求TAG
+                            listener.onLoadFailed(result);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(final Request request, IOException e) {
+                        // 访问服务器出错，有可能是路径有问题也有可能是网络连接异常
+                        Log.e(TAG, "访问服务器出错：" + request.toString());
+                        listener.onNetError("网络异常");
+                    }
+                });
+        return true;
     }
 
 }

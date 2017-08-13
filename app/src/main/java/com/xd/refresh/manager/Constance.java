@@ -12,8 +12,16 @@ public class Constance {
 //     */
 //    public static final String[] AXF_AD_UNIT_IDS = {"72ADDD0A7D6DB73002B50127EFB9058E",
 //            "4DC8E82FA7FD669A3F62C6838D9FFF6D", "09840B44546AA78634331F0B5AADDDAC"};
-    public static final String[] AXF_AD_UNIT_IDS = {"BB0EAA5FB04B2091015ADD9FD61B7BF6",
-            "09B193CB93C134E83BF0B39410ED71F6", "8C261BADFB8BF9FA9B1424E42EBAE09E"};
+
+    public static final String[] AXF_AD_UNIT_IDS = {"72ADDD0A7D6DB73002B50127EFB9058E",
+            "09840B44546AA78634331F0B5AADDDAC", "4DC8E82FA7FD669A3F62C6838D9FFF6D"};
+
+//    // 爱鲜蜂测试广告位
+//    public static final String[] AXF_AD_UNIT_IDS = {"BB0EAA5FB04B2091015ADD9FD61B7BF6",
+//            "09B193CB93C134E83BF0B39410ED71F6", "8C261BADFB8BF9FA9B1424E42EBAE09E"};
+
+//    public static final String[] AXF_AD_UNIT_IDS = {"03D01A68574D747518974C3B48FA86D9",
+//            "5F830890613BEC8E9352770B5F3C0B2D"};
 
 //    /**
 //     * 天天果园展示广告位控件分别对应的宽和高 [0]=全屏，[1]=banner,[2]=插屏,[3]=信息流
@@ -27,6 +35,13 @@ public class Constance {
     public static final String AXF_APP_ID = "595b4ceb";
     public static final String AXF_APP_NAME = "爱鲜蜂";
     public static final String AXF_APP_PACKAGE_NAME = "com.bjzcht.lovebeequick";
+
+//    public static final String AXF_APP_ID = "58d9d690";
+//    public static final String AXF_APP_NAME = "爱玩商店";
+//    public static final String AXF_APP_PACKAGE_NAME = "com.xd.leplay.store";
+
+
+
 
     /**
      * 当前数据库的总条数

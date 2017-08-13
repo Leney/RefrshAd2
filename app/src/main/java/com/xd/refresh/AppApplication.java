@@ -2,6 +2,7 @@ package com.xd.refresh;
 
 import android.app.Application;
 
+import com.squareup.okhttp.OkHttpClient;
 import com.xd.refresh.manager.Constance;
 import com.xd.refresh.manager.db.DeviceDBManager;
 
@@ -12,7 +13,9 @@ import com.xd.refresh.manager.db.DeviceDBManager;
 public class AppApplication extends Application {
     private static AppApplication instance;
 
-    public static Application getInstance(){
+    private OkHttpClient client;
+
+    public static AppApplication getInstance(){
         return  instance;
     }
 
@@ -25,6 +28,18 @@ public class AppApplication extends Application {
         Constance.DB_TOTAL_DATA_COUNT = (int) DeviceDBManager.getInstance().getTotalCount();
     }
 
+
+    /***
+     * 获取httpClient对象
+     *
+     * @return
+     */
+    public OkHttpClient getHttpClient() {
+        if (client == null) {
+            client = new OkHttpClient();
+        }
+        return client;
+    }
 
 //    /**
 //     * 判断当前前端显示的是否是某个activity

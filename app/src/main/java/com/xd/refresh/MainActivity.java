@@ -2,13 +2,20 @@ package com.xd.refresh;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
+import com.xd.refresh.bean.DeviceInfo;
+import com.xd.refresh.bean.ProxyIpBean;
 import com.xd.refresh.manager.Constance;
 import com.xd.refresh.manager.thread.AdTask;
 import com.xd.refresh.manager.thread.ThreadPoolManager;
+import com.xd.refresh.util.NetUtil;
 import com.xd.refresh.util.Tools;
+import com.xd.refresh.util.listener.OnLoadAdListener;
+
+import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -27,8 +34,9 @@ public class MainActivity extends AppCompatActivity {
 //                new Thread(new Runnable() {
 //                    @Override
 //                    public void run() {
-//                        List<ProxyIpBean> ipBeans = Tools.getProxyIpList();
-//                        Log.i("llj","ipBeans.size()---->>>"+ipBeans.size());
+////                        List<ProxyIpBean> ipBeans = Tools.getProxyIpList();
+////                        Log.i("llj","ipBeans.size()---->>>"+ipBeans.size());
+//                        test();
 //                    }
 //                }).start();
 
@@ -74,6 +82,79 @@ public class MainActivity extends AppCompatActivity {
 //                SkipManager.getInstance().add(ipBean5);
 //                SkipManager.getInstance().add(ipBean6);
 //                SkipManager.getInstance().add(ipBean7);
+            }
+        });
+    }
+
+
+
+    private void test(){
+        DeviceInfo deviceInfo = Tools.getDeviceInfoByRamdon();
+        Log.i("llj","deviceInfo.ua---->>"+deviceInfo.ua);
+        ProxyIpBean ipBean = new ProxyIpBean();
+        ipBean.ip = "114.116.30.61";
+
+
+        NetUtil.requestKDXFAdInfos(deviceInfo, ipBean, Constance.AXF_AD_UNIT_IDS[0], true, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, new OnLoadAdListener() {
+            @Override
+            public void onLoadSuccess(JSONObject resultObject, ProxyIpBean ipBean, DeviceInfo deviceInfo) {
+                Log.i("llj","请求广告成功---------->>>"+resultObject.toString());
+            }
+
+            @Override
+            public void onLoadFailed(String msg) {
+                Log.i("llj","请求广告失败！！！msg-------->>>"+msg);
+            }
+
+            @Override
+            public void onNetError(String msg) {
+                Log.i("llj","网络链接失败！！！");
+            }
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        NetUtil.requestKDXFAdInfos(deviceInfo, ipBean, Constance.AXF_AD_UNIT_IDS[1], false, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, new OnLoadAdListener() {
+            @Override
+            public void onLoadSuccess(JSONObject resultObject, ProxyIpBean ipBean, DeviceInfo deviceInfo) {
+                Log.i("llj","请求广告成功---------->>>"+resultObject.toString());
+            }
+
+            @Override
+            public void onLoadFailed(String msg) {
+                Log.i("llj","请求广告失败！！！msg-------->>>"+msg);
+            }
+
+            @Override
+            public void onNetError(String msg) {
+                Log.i("llj","网络链接失败！！！");
+            }
+        });
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        NetUtil.requestKDXFAdInfos(deviceInfo, ipBean, Constance.AXF_AD_UNIT_IDS[1], true, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, new OnLoadAdListener() {
+            @Override
+            public void onLoadSuccess(JSONObject resultObject, ProxyIpBean ipBean, DeviceInfo deviceInfo) {
+                Log.i("llj","请求广告成功---------->>>"+resultObject.toString());
+            }
+
+            @Override
+            public void onLoadFailed(String msg) {
+                Log.i("llj","请求广告失败！！！msg-------->>>"+msg);
+            }
+
+            @Override
+            public void onNetError(String msg) {
+                Log.i("llj","网络链接失败！！！");
             }
         });
     }
