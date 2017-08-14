@@ -1,6 +1,7 @@
 package com.xd.refresh.util;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.xd.refresh.bean.AdInfo;
 import com.xd.refresh.bean.ProxyIpBean;
@@ -21,7 +22,7 @@ public class ParseUtil {
     public static List<ProxyIpBean> parseIpBeans(String result){
         List<ProxyIpBean> list = new ArrayList<>();
         try {
-            System.out.println("parseIpBeans result---->>>"+result);
+            Log.i("llj","parseIpBeans result---->>>"+result);
             JSONObject jsonObject = new JSONObject(result);
             int code = jsonObject.getInt("code");
             if(code == 0){
@@ -53,7 +54,7 @@ public class ParseUtil {
     public static List<ProxyIpBean> parseIpBeansFromXun(String result){
         List<ProxyIpBean> list = new ArrayList<>();
         try {
-            System.out.println("parseIpBeans result---->>>"+result);
+            Log.i("llj","parseIpBeans result---->>>"+result);
             JSONObject jsonObject = new JSONObject(result);
             int code = jsonObject.getInt("ERRORCODE");
             if(code == 0){
@@ -81,7 +82,7 @@ public class ParseUtil {
     public static List<ProxyIpBean> parseIpBeansFromIpJL(String result){
         List<ProxyIpBean> list = new ArrayList<>();
         try {
-            System.out.println("parseIpBeans result---->>>"+result);
+            Log.i("llj","parseIpBeans result---->>>"+result);
             JSONObject dataObject = new JSONObject(result);
             JSONObject dataObject2 = dataObject.getJSONObject("data");
             int code = dataObject2.getInt("code");

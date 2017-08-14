@@ -1,5 +1,7 @@
 package com.xd.refresh.manager.thread;
 
+import android.util.Log;
+
 import com.xd.refresh.bean.AdInfo;
 import com.xd.refresh.bean.DeviceInfo;
 import com.xd.refresh.bean.ProxyIpBean;
@@ -97,17 +99,16 @@ public class AdTask implements Runnable {
     @Override
     public void run() {
         while (true) {
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
-            System.out.println("");
+            Log.i("llj","");
+            Log.i("llj","");
+            Log.i("llj","");
+            Log.i("llj","");
             // 获取ipBean信息
             if (isUseNew) {
-                System.out.println("使用的是新的集合中的数据！！！线程编号---->>>" + threadNum);
+                Log.i("llj","使用的是新的集合中的数据！！！线程编号---->>>" + threadNum);
                 // 使用新的代理ip集合中的数据
                 if (newProxyIpBeanList.isEmpty()) {
-                    System.out.println("新集合中的数据是空的！！");
+                    Log.i("llj","新集合中的数据是空的！！");
                     // 如果集合中为空，则表明新的ip已经用完
                     // 则从芝麻获取一批新的代理ip数据
                     List<ProxyIpBean> ipBeans = Tools.getProxyIpList();
@@ -120,22 +121,22 @@ public class AdTask implements Runnable {
                 }
                 this.ipBean = newProxyIpBeanList.getFirst();
                 if (this.ipBean == null) {
-                    System.out.println("从新集合中的获取到的ipBean数据是空的！！");
+                    Log.i("llj","从新集合中的获取到的ipBean数据是空的！！");
                     newProxyIpBeanList.removeFirst();
                     continue;
                 }
             } else {
-                System.out.println("使用的是旧的集合中的数据！！！线程编号---->>>" + threadNum);
+                Log.i("llj","使用的是旧的集合中的数据！！！线程编号---->>>" + threadNum);
                 // 使用的是旧的有效的ip集合里的数据
                 if (oldProxyIpBeanList.isEmpty() || ipDeviceInfoMap.isEmpty()) {
                     // 旧的集合中没有数据了,使用完了
-                    System.out.println("旧的集合中没有数据了,使用完了！！");
+                    Log.i("llj","旧的集合中没有数据了,使用完了！！");
                     isUseNew = true;
                     continue;
                 } else {
                     this.ipBean = oldProxyIpBeanList.getFirst();
                     if (this.ipBean == null) {
-                        System.out.println("从旧的集合中获取到的ipBean为空！！！");
+                        Log.i("llj","从旧的集合中获取到的ipBean为空！！！");
                         oldProxyIpBeanList.removeFirst();
                         continue;
                     }
@@ -144,14 +145,14 @@ public class AdTask implements Runnable {
 
             // ipBean为空  就重新来，进入下一次循环
             if (this.ipBean == null) {
-                System.out.println("新集合中的数据是空的！！");
+                Log.i("llj","新集合中的数据是空的！！");
                 continue;
             }
             // 检测ipBean是否有效
             if (isUseNew) {
                 if (NetUtil.isValidProxyIp(ipBean)) {
                     // 有效的ip
-                    System.out.println("此ip有效---->>" + ipBean.ip);
+                    Log.i("llj","此ip有效---->>" + ipBean.ip);
 
                     //从数据库中获取手机设备信息
 //					this.deviceInfo = new DeviceInfo();
@@ -172,10 +173,10 @@ public class AdTask implements Runnable {
 //					deviceInfo.vendor = "HuaWei";
 
                     this.deviceInfo = Tools.getDeviceInfoByRamdon();
-                    System.out.println("随机从数据库中获取到的设备信息  deviceInfo.imei------------->>>" + deviceInfo.imei);
+                    Log.i("llj","随机从数据库中获取到的设备信息  deviceInfo.imei------------->>>" + deviceInfo.imei);
                 } else {
                     // 无效的ip
-                    System.out.println("此ip无效---->>" + ipBean.ip);
+                    Log.i("llj","此ip无效---->>" + ipBean.ip);
                     newProxyIpBeanList.removeFirst();
                     ipBean = null;
                     continue;
@@ -204,7 +205,7 @@ public class AdTask implements Runnable {
 
             // deviceInfo为空  就重新来，进入下一次循环
             if (this.deviceInfo == null) {
-                System.out.println("得到的设备信息deviceInfo是空的！！！");
+                Log.i("llj","得到的设备信息deviceInfo是空的！！！");
                 this.ipBean = null;
                 continue;
             }
@@ -213,7 +214,7 @@ public class AdTask implements Runnable {
             for (int i = 0; i < adUnitIds.length; i++) {
                 // 请求科大讯飞数据
                 time++;
-                System.out.println("当前请求的讯飞的总次数----->>>" + time);
+                Log.i("llj","当前请求的讯飞的总次数----->>>" + time);
                 NetUtil.requestKDXFAdInfos(deviceInfo, ipBean, adUnitIds[i], i == 0, appId, appName, packageName, new OnLoadAdListener() {
 
                     @Override
@@ -222,7 +223,7 @@ public class AdTask implements Runnable {
 
                     @Override
                     public void onLoadSuccess(JSONObject resultObject, ProxyIpBean ipBean, DeviceInfo deviceInfo) {
-                        System.out.println("有广告数据！！线程编号---->>>" + threadNum);
+                        Log.i("llj","有广告数据！！线程编号---->>>" + threadNum);
                         disposeGetAdSuccess(resultObject, ipBean, deviceInfo);
                     }
 
@@ -248,11 +249,11 @@ public class AdTask implements Runnable {
 
             // 判断下一次循环需使用哪个集合中的数据(新的还是旧的)
             if (isUseNew) {
-                System.out.println("旧的集合中的条数-----------》》》" + oldProxyIpBeanList.size());
+                Log.i("llj","旧的集合中的条数-----------》》》" + oldProxyIpBeanList.size());
                 if (newProxyIpBeanList.isEmpty() && oldProxyIpBeanList.size() >= 5) {
                     // 设置从旧的ip信息集合中获取数据
                     isUseNew = false;
-                    System.out.println("准备开始使用旧的集合中的数据信息！！！");
+                    Log.i("llj","准备开始使用旧的集合中的数据信息！！！");
                 }
             } else {
                 if (oldProxyIpBeanList.isEmpty()) {
@@ -276,17 +277,17 @@ public class AdTask implements Runnable {
     private void disposeGetAdSuccess(JSONObject resultObject, ProxyIpBean ipBean, DeviceInfo deviceInfo) {
         // 广告请求成功
         AdInfo adInfo = ParseUtil.getAdInfo(resultObject);
-        System.out.println("adInfo == null------>>>" + (adInfo == null));
+        Log.i("llj","adInfo == null------>>>" + (adInfo == null));
         if (adInfo == null) {
             return;
         }
-        System.out.println("开始展示上报,广告类型------>>"+adInfo.getAdType());
+        Log.i("llj","开始展示上报,广告类型------>>"+adInfo.getAdType());
         // 上报展示数据成功 请求上报链接
         NetUtil.requestUrlsByProxy(ipBean, adInfo.getImprUrls(), deviceInfo.ua);
         // 设置百分之6的点击率
         if (Tools.isClick(6)) {
             // 如果随机数的长度是 4 或者 5 则等一段时间进行点击上报
-//            System.out.println("休眠一段时间 准备上报点击url");
+//            Log.i("llj","休眠一段时间 准备上报点击url");
 //				// 这里暂时不做等待一段时间的操作
 //				 int sleepTimeRandom = Tools.randomMinMax(1000, 6000);
 //				 try {
@@ -295,7 +296,7 @@ public class AdTask implements Runnable {
 //				 } catch (InterruptedException e) {
 //				 e.printStackTrace();
 //				 }
-            System.out.print("达到点击概率,去点击！！");
+            Log.i("llj","达到点击概率,去点击！！");
             // 设置上报点击
             Tools.doClick(adInfo, ipBean, deviceInfo, threadNum + "");
         }

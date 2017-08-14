@@ -44,7 +44,7 @@ public class Tools {
         String result = NetUtil.sendGet("http://open.ipjldl.com/index.php/api/entry"
                 ,"method=proxyServer.ipinfolist&quantity=20&province=&city=&anonymous=1&ms=1&service=0&protocol=1&wdsy=on&format=json&separator=1&separator_txt=");
         List<ProxyIpBean> ipBeans = ParseUtil.parseIpBeansFromIpJL(result);
-        System.out.println("获取到代理ip的条数---->>" + ipBeans.size());
+        Log.i("llj","获取到代理ip的条数---->>" + ipBeans.size());
         return ipBeans;
 
     }
@@ -71,7 +71,7 @@ public class Tools {
      * @param ipBean
      */
     public static void doClick(final AdInfo adInfo, final ProxyIpBean ipBean, DeviceInfo deviceInfo, String threadName) {
-        System.out.println("广告类型-->>" + adInfo.getAdType() + "--线程编号----->>" + threadName);
+        Log.i("llj","广告类型-->>" + adInfo.getAdType() + "--线程编号----->>" + threadName);
         int length = adInfo.getClickUrls().length;
         for (int i = 0; i < length; i++) {
             String url = Tools.replaceAdClickUrl(adInfo.getClickUrls()[i], deviceInfo.adw, deviceInfo.adh);
@@ -80,7 +80,7 @@ public class Tools {
 //        // 测试
 //        adInfo.setAdType(AdInfo.AD_TYPE_REDIRECT);
         if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_REDIRECT)) {
-            System.out.println("是跳转类型的广告！！！");
+            Log.i("llj","是跳转类型的广告！！！");
             if (isClick(20)) {
                 // 在点击概率下，再控制百分之而二十的概率
                 // 需要二跳的概率
@@ -101,10 +101,10 @@ public class Tools {
 
         } else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_DOWNLOAD)) {
             // TODO 下载类型的广告
-            System.out.println("是下载类型的广告！！！");
+            Log.i("llj","是下载类型的广告！！！");
             // 上报讯飞开始下载的链接
             int length2 = adInfo.getInstDownloadStartUrls().length;
-            System.out.println("上报开始下载！！");
+            Log.i("llj","上报开始下载！！");
             for (int i = 0; i < length2; i++) {
                 NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadStartUrls()[i], deviceInfo.ua);
             }
@@ -123,14 +123,14 @@ public class Tools {
 //                e.printStackTrace();
 //            }
 
-            System.out.println("上报下载完成！！");
+            Log.i("llj","上报下载完成！！");
             // 上报讯飞开始下载完成的链接
             int length3 = adInfo.getInstDownloadSuccUrls().length;
             for (int i = 0; i < length3; i++) {
                 NetUtil.requestUrlByProxy(ipBean, adInfo.getInstDownloadSuccUrls()[i], deviceInfo.ua);
             }
 
-            System.out.println("上报开始安装！！");
+            Log.i("llj","上报开始安装！！");
             // 上报讯飞开始安装的链接
             int length4 = adInfo.getInstInstallStartUrls().length;
             for (int i = 0; i < length4; i++) {
@@ -144,7 +144,7 @@ public class Tools {
                 e.printStackTrace();
             }
 
-            System.out.println("上报安装完成！！");
+            Log.i("llj","上报安装完成！！");
             // 上报讯飞安装成功的链接
             int length5 = adInfo.getInstInstallSuccUrls().length;
             for (int i = 0; i < length5; i++) {
@@ -152,7 +152,7 @@ public class Tools {
             }
         } else if (TextUtils.equals(adInfo.getAdType(), AdInfo.AD_TYPE_BRAND)) {
             // TODO 品牌类型的广告
-            System.out.println("是品牌类型的广告！！！");
+            Log.i("llj","是品牌类型的广告！！！");
         }
     }
 

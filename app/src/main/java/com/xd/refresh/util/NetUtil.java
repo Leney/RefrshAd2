@@ -40,10 +40,8 @@ public class NetUtil {
     /**
      * 向指定URL发送GET方法的请求
      *
-     * @param url
-     *            发送请求的URL
-     * @param param
-     *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     * @param url   发送请求的URL
+     * @param param 请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return URL 所代表远程资源的响应结果
      */
     public static String sendGet(String url, String param) {
@@ -64,15 +62,17 @@ public class NetUtil {
             URLConnection connection = realUrl.openConnection();
             // 设置通用的请求属性
             connection.setRequestProperty("accept", "*/*");
+            connection.setConnectTimeout(10000);
+            connection.setReadTimeout(10000);
 //			connection.setRequestProperty("connection", "Keep-Alive");
-            connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//            connection.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             // 建立实际的连接
             connection.connect();
 //            // 获取所有响应头字段
 //            Map<String, List<String>> map = connection.getHeaderFields();
 //            // 遍历所有的响应头字段
 //            for (String key : map.keySet()) {
-//                System.out.println(key + "--->" + map.get(key));
+//                Log.i("llj",key + "--->" + map.get(key));
 //            }
             // 定义 BufferedReader输入流来读取URL的响应
             in = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"));
@@ -81,7 +81,7 @@ public class NetUtil {
                 result += line;
             }
         } catch (Exception e) {
-            System.out.println("发送GET请求出现异常！" + e);
+            Log.i("llj", "发送GET请求出现异常！" + e);
             e.printStackTrace();
         }
         // 使用finally块来关闭输入流
@@ -100,10 +100,9 @@ public class NetUtil {
     /**
      * 向指定 URL 发送POST方法的请求
      *
-     * @param url
-     *            发送请求的 URL
+     * @param url   发送请求的 URL
      * @param param 868092020914360
-     *            请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
+     *              请求参数，请求参数应该是 name1=value1&name2=value2 的形式。
      * @return 所代表远程资源的响应结果
      */
     public static String sendPost(String url, String param) {
@@ -129,8 +128,10 @@ public class NetUtil {
             URLConnection conn = realUrl.openConnection();
             // 设置通用的请求属性
             conn.setRequestProperty("accept", "*/*");
+            conn.setConnectTimeout(10000);
+            conn.setReadTimeout(10000);
 //			conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+//            conn.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
             // 发送POST请求必须设置如下两行
             conn.setDoOutput(true);
             conn.setDoInput(true);
@@ -149,7 +150,7 @@ public class NetUtil {
             String encodeString = new String(result.getBytes(), "UTF-8");
             result = encodeString;
         } catch (Exception e) {
-            System.out.println("发送 POST 请求出现异常！" + e);
+            Log.i("llj", "发送 POST 请求出现异常！" + e);
             e.printStackTrace();
         }
         // 使用finally块来关闭输出流、输入流
@@ -197,7 +198,7 @@ public class NetUtil {
     // // Authenticator.setDefault(new MyAuthenticator("userName",
     // // "Password"));
     //
-    // System.out.println("设置代理完成！！！");
+    // Log.i("llj","设置代理完成！！！");
     // }
 
     // static class MyAuthenticator extends Authenticator {
@@ -377,7 +378,7 @@ public class NetUtil {
     // // String line;
     // // while ((line = reader.readLine()) != null) {
     // // result += line;
-    // // System.out.println("line2--->>" + line);
+    // // Log.i("llj","line2--->>" + line);
     // // }
     // // result = new String(result.getBytes(), "utf-8");
     // // } catch (Exception e) {
@@ -497,7 +498,7 @@ public class NetUtil {
 //			// 设置http访问要使用的代理服务器的端口
 //			prop.setProperty("http.proxyPort", ipBean.port + "");
 
-            InetSocketAddress addr = new InetSocketAddress(ipBean.ip,ipBean.port);
+            InetSocketAddress addr = new InetSocketAddress(ipBean.ip, ipBean.port);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
 
             urlConnection = (HttpURLConnection) url.openConnection(proxy);
@@ -529,7 +530,7 @@ public class NetUtil {
 
             JSONObject object = new JSONObject(result);
             String ip = object.getString("ip");
-            System.out.println("返回ip---->>>" + ip);
+            Log.i("llj", "返回ip---->>>" + ip);
             if (TextUtils.equals(ip, ipBean.ip)) {
                 // 是有效的额代理ip
                 isValia = true;
@@ -563,19 +564,19 @@ public class NetUtil {
     /**
      * 通过代理请求一个链接(讯飞上报)
      */
-    public static void requestUrlByProxy(ProxyIpBean ipBean, String reportUrl,String userAgent) {
+    public static void requestUrlByProxy(ProxyIpBean ipBean, String reportUrl, String userAgent) {
         HttpURLConnection urlConnection = null;
-        System.out.println("上报链接---->>>" + reportUrl);
+        Log.i("llj", "上报链接---->>>" + reportUrl);
         try {
             URL url = new URL(reportUrl);
             // 设置代理
-            InetSocketAddress addr = new InetSocketAddress(ipBean.ip,ipBean.port);
+            InetSocketAddress addr = new InetSocketAddress(ipBean.ip, ipBean.port);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
             urlConnection = (HttpURLConnection) url.openConnection(proxy);
 
             // 设置请求header参数
             // 设置User-Agent
-            urlConnection.setRequestProperty("User-Agent",userAgent);
+            urlConnection.setRequestProperty("User-Agent", userAgent);
 
             urlConnection.setDoInput(true);
             urlConnection.setConnectTimeout(10000);
@@ -586,7 +587,7 @@ public class NetUtil {
             e.printStackTrace();
             // result = "";
         } finally {
-            if(urlConnection != null){
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
         }
@@ -595,10 +596,10 @@ public class NetUtil {
     /**
      * 通过代理请求多个链接(讯飞上报)
      */
-    public static void requestUrlsByProxy(ProxyIpBean ipBean, String[] reportUrls,String userAgent) {
+    public static void requestUrlsByProxy(ProxyIpBean ipBean, String[] reportUrls, String userAgent) {
         int length = reportUrls.length;
         for (int i = 0; i < length; i++) {
-            requestUrlByProxy(ipBean, reportUrls[i],userAgent);
+            requestUrlByProxy(ipBean, reportUrls[i], userAgent);
         }
     }
 
@@ -620,7 +621,7 @@ public class NetUtil {
             // 数据类型json　或 html
             requestBodyJson.put("tramaterialtype", deviceInfo.tramaterialtype);
             // // 是否支持deepLink 0=不支持，1=支持
-             requestBodyJson.put("is_support_deeplink",deviceInfo.is_support_deeplink);
+            requestBodyJson.put("is_support_deeplink", deviceInfo.is_support_deeplink);
             // 广告位宽度
             requestBodyJson.put("adw", deviceInfo.adw);
             // 广告位高度
@@ -665,7 +666,7 @@ public class NetUtil {
             // app包名 和讯飞后台保持一致
             requestBodyJson.put("pkgname", packageName);
             // 讯飞新增字段?
-            requestBodyJson.put("appver","1.2.9");
+            requestBodyJson.put("appver", "4.5.2");
 
 //            // 调试数据
 //            JSONObject debugObject = new JSONObject();
@@ -686,12 +687,11 @@ public class NetUtil {
 //			prop.setProperty("http.proxyPort", ipBean.port + "");
 
             // 设置访问代理
-            InetSocketAddress addr = new InetSocketAddress(ipBean.ip,ipBean.port);
+            InetSocketAddress addr = new InetSocketAddress(ipBean.ip, ipBean.port);
             Proxy proxy = new Proxy(Proxy.Type.HTTP, addr);
             urlConnection = (HttpURLConnection) url.openConnection(proxy);
 
             urlConnection = (HttpURLConnection) url.openConnection();
-
 
 
 //            String authentication = "15118042006:lljaifeifei0816"; // 用户名密码
@@ -700,7 +700,7 @@ public class NetUtil {
 
             // 设置请求header数据
             // 设置User-Agent
-            urlConnection.setRequestProperty("User-Agent",deviceInfo.ua);
+            urlConnection.setRequestProperty("User-Agent", deviceInfo.ua);
 
             urlConnection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
             urlConnection.setRequestProperty("Connection", "Keep-Alive");// 维持长连接
@@ -749,10 +749,10 @@ public class NetUtil {
                 InputStream responseStream = null;
                 StringBuffer sb = new StringBuffer();
                 String encoding = urlConnection.getHeaderField("Content-Encoding");
-                boolean gzipped = encoding!=null && encoding.toLowerCase().contains("gzip");
-                if(gzipped){
+                boolean gzipped = encoding != null && encoding.toLowerCase().contains("gzip");
+                if (gzipped) {
                     responseStream = new BufferedInputStream(new GZIPInputStream(urlConnection.getInputStream()));
-                }else {
+                } else {
                     responseStream = new BufferedInputStream(urlConnection.getInputStream());
                 }
 
@@ -765,13 +765,13 @@ public class NetUtil {
                 }
                 reader.close();
                 result = sb.toString();
-                System.out.println("讯飞广告数据返回result---->>>" + result);
+                Log.i("llj", "讯飞广告数据返回result---->>>" + result);
 
                 try {
                     JSONObject resultObject = new JSONObject(result);
                     if (resultObject.getInt("rc") == 70200) {
                         // 请求广告成功、下发广告成功
-                        listener.onLoadSuccess(resultObject,ipBean,deviceInfo);
+                        listener.onLoadSuccess(resultObject, ipBean, deviceInfo);
                     } else {
                         // 连接到服务器成功，但出现一些错误，下发广告失败
                         listener.onLoadFailed(result);
@@ -780,7 +780,7 @@ public class NetUtil {
                     e.printStackTrace();
                 }
             } else {
-                System.out.println("服务器报错，无法响应，返回码---->>>" + resultCode);
+                Log.i("llj", "服务器报错，无法响应，返回码---->>>" + resultCode);
                 // 这里rspPacket返回的actions 是请求TAG
                 result = "服务器报错，无法响应，返回码---->>>" + resultCode;
                 listener.onLoadFailed(result);
@@ -791,7 +791,7 @@ public class NetUtil {
             result = "请求讯飞广告出现异常！";
             listener.onLoadFailed(result);
         } finally {
-            if(urlConnection != null){
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
             try {
@@ -865,7 +865,7 @@ public class NetUtil {
             inputStream.close();
         }
 
-        System.out.println("info:" + url + " download success");
+        Log.i("llj", "info:" + url + " download success");
 
     }
 
@@ -886,10 +886,6 @@ public class NetUtil {
         bos.close();
         return bos.toByteArray();
     }
-
-
-
-
 
 
     /**
@@ -913,7 +909,7 @@ public class NetUtil {
             // 数据类型json　或 html
             requestBodyJson.put("tramaterialtype", deviceInfo.tramaterialtype);
             // // 是否支持deepLink 0=不支持，1=支持
-            requestBodyJson.put("is_support_deeplink",deviceInfo.is_support_deeplink);
+            requestBodyJson.put("is_support_deeplink", deviceInfo.is_support_deeplink);
             // 广告位宽度
             requestBodyJson.put("adw", deviceInfo.adw);
             // 广告位高度
@@ -961,7 +957,7 @@ public class NetUtil {
             // app包名 和讯飞后台保持一致
             requestBodyJson.put("pkgname", packageName);
             // 讯飞新增字段?
-            requestBodyJson.put("appver","1.2.9");
+            requestBodyJson.put("appver", "1.2.9");
 
 //            // 调试数据
 //            JSONObject debugObject = new JSONObject();
@@ -1002,8 +998,8 @@ public class NetUtil {
         CacheControl.Builder builder = new CacheControl.Builder();
         builder.noCache();
 //        if(isBoot){
-            request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
-                    ("X-protocol-ver", "2.0").addHeader("Content-Type","application/json").build();
+        request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
+                ("X-protocol-ver", "2.0").addHeader("Content-Type", "application/json").build();
 //        }else {
 //            request = new Request.Builder().url("http://ws.voiceads.cn/ad/request").post(body).addHeader
 //                    ("X-protocol-ver", "2.0").addHeader("Content-Type","application/json").build();
@@ -1029,7 +1025,7 @@ public class NetUtil {
                                 JSONObject resultObject = new JSONObject(result);
                                 if (resultObject.getInt("rc") == 70200) {
                                     // 请求广告成功、下发广告成功
-                                    listener.onLoadSuccess(resultObject,ipBean,deviceInfo);
+                                    listener.onLoadSuccess(resultObject, ipBean, deviceInfo);
                                 } else {
                                     // 连接到服务器成功，但出现一些错误，下发广告失败
                                     listener.onLoadFailed(result);
