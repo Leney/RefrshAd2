@@ -42,18 +42,13 @@ public class MainActivity extends AppCompatActivity {
 
                 AdTask adTask1 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 1);
                 AdTask adTask2 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 2);
-//                AdTask adTask3 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 3);
+                AdTask adTask3 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 3);
 //		AdTask adTask4 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 4);
 //		AdTask adTask5 = new AdTask(Constance.AXF_AD_UNIT_IDS, Constance.AXF_APP_ID, Constance.AXF_APP_NAME, Constance.AXF_APP_PACKAGE_NAME, 5);
 
                 ThreadPoolManager.getInstance().addTask(adTask1);
-                try {
-                    Thread.sleep(4000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
                 ThreadPoolManager.getInstance().addTask(adTask2);
-//                ThreadPoolManager.getInstance().addTask(adTask3);
+                ThreadPoolManager.getInstance().addTask(adTask3);
 //		ThreadPoolManager.getInstance().addTask(adTask4);
 //		ThreadPoolManager.getInstance().addTask(adTask5);
 

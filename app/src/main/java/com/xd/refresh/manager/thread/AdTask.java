@@ -110,7 +110,22 @@ public class AdTask implements Runnable {
                 if (newProxyIpBeanList.isEmpty()) {
                     Log.i("llj","新集合中的数据是空的！！");
                     // 如果集合中为空，则表明新的ip已经用完
-                    // 则从芝麻获取一批新的代理ip数据
+
+                    while (true){
+                        if(!Tools.isCanRequestIp()){
+                            Log.i("llj","距离上次请求ip还没有过去3秒钟,休眠1秒再请求！！！threadNum----->>"+threadNum);
+                            try {
+                                Thread.sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            continue;
+                        }
+                        break;
+                    }
+
+                    Log.i("llj","获取一批新的ip数据 threadNum---->>"+threadNum);
+                    // 获取一批新的代理ip数据
                     List<ProxyIpBean> ipBeans = Tools.getProxyIpList();
                     newProxyIpBeanList.addAll(ipBeans);
                     if (newProxyIpBeanList.isEmpty()) {
@@ -214,7 +229,7 @@ public class AdTask implements Runnable {
             for (int i = 0; i < adUnitIds.length; i++) {
                 // 请求科大讯飞数据
                 time++;
-                Log.i("llj","当前请求的讯飞的总次数----->>>" + time);
+                Log.i("llj","当前请求的讯飞的总次数----->>>" + time+"---threadNum----->>>"+threadNum);
                 NetUtil.requestKDXFAdInfos(deviceInfo, ipBean, adUnitIds[i], i == 0, appId, appName, packageName, new OnLoadAdListener() {
 
                     @Override

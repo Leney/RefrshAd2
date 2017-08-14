@@ -48,6 +48,11 @@ public class Constance {
      */
     public static int DB_TOTAL_DATA_COUNT = 0;
 
+    /**
+     * 上一次请求ip的时间(为了防止被ip那边认定为恶意请求)
+     */
+    public static long LAST_REQUEST_IP_TIME = 0L;
+
 //    /** 设备数据库文件的路径*/
 //    public static String dbUrl = System.getProperty("user.dir") + File.separator + "db"+ File.separator+ "raw/device.db";
 

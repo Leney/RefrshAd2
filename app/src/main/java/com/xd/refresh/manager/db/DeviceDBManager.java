@@ -47,7 +47,7 @@ public class DeviceDBManager {
      *
      * @return
      */
-    public DeviceInfo queryDeviceInfo(int id) {
+    public synchronized DeviceInfo queryDeviceInfo(int id) {
 
         DeviceInfo deviceInfo;
         try {
